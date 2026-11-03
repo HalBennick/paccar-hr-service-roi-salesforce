@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<title>PACCAR HR Service: ROI and 5-year business value</title>
+<meta name="description" content="Draft ROI model for Agentforce HR Service Desk and Slack Frontline across four PACCAR US plants, modeled over five years.">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root {
+  color-scheme: light dark;
+  --plane: #f9f9f7;
+  --surface: #fcfcfb;
+  --ink: #0b0b0b;
+  --ink2: #52514e;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11,11,11,0.10);
+  --wash: rgba(11,11,11,0.045);
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --plane: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #f0efec;
+    --ink2: #c3c2b7;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255,255,255,0.10);
+    --wash: rgba(255,255,255,0.06);
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--plane);
+  color: var(--ink);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.wrap { max-width: 960px; margin: 0 auto; padding: 0 20px 72px; }
+header.top { padding: 56px 0 8px; }
+.eyebrow { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink2); margin: 0; }
+h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.1; letter-spacing: -.02em; margin: 10px 0 14px; font-weight: 650; }
+.lede { font-size: 18px; color: var(--ink2); max-width: 62ch; margin: 0; }
+.byline { font-size: 13.5px; color: var(--ink2); margin: 14px 0 0; }
+.draft {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 12px 16px; margin: 22px 0 0; font-size: 14.5px; color: var(--ink2); max-width: none;
+}
+.draft b { color: var(--ink); }
+section { margin-top: 52px; }
+h2 { font-size: 22px; line-height: 1.25; letter-spacing: -.01em; margin: 0 0 12px; font-weight: 650; }
+h3 { font-size: 16px; margin: 0; font-weight: 650; }
+p { max-width: 70ch; margin: 0 0 14px; }
+.note { font-size: 14px; color: var(--ink2); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 28px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+.tile .v { font-size: 36px; line-height: 1.1; font-weight: 650; letter-spacing: -.02em; }
+.tile .l { font-size: 14px; color: var(--ink2); margin-top: 6px; }
+.tilenote { font-size: 13.5px; color: var(--ink2); margin: 10px 0 0; max-width: none; }
+
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+caption { text-align: left; padding: 12px 14px 4px; font-size: 13.5px; color: var(--ink2); caption-side: top; }
+th, td { padding: 10px 14px; text-align: right; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-weight: 650; font-size: 13.5px; color: var(--ink2); white-space: nowrap; }
+tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+tbody th { font-weight: 400; }
+.exp { background: var(--wash); }
+td.l, th.l { text-align: left; }
+tr.sum td, tr.sum th { font-weight: 650; }
+.nowrap { white-space: nowrap; }
+
+.chartbox { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 16px 12px; margin-top: 16px; }
+.chead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.chead p { margin: 2px 0 0; font-size: 13.5px; color: var(--ink2); max-width: none; }
+.toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.toggle button {
+  font: inherit; font-size: 13.5px; background: transparent; color: var(--ink2);
+  border: 0; padding: 5px 12px; cursor: pointer;
+}
+.toggle button + button { border-left: 1px solid var(--border); }
+.toggle button[aria-pressed="true"] { background: var(--wash); color: var(--ink); font-weight: 650; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 10px 0 4px; padding: 0; list-style: none; font-size: 13.5px; color: var(--ink2); }
+.legend li { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { display: inline-block; width: 16px; height: 0; border-top: 2px solid; border-radius: 2px; }
+.legend i.k1 { border-color: var(--series-1); } .legend i.k2 { border-color: var(--series-2); } .legend i.k3 { border-color: var(--series-3); }
+.plot { position: relative; margin-top: 4px; touch-action: pan-y; }
+.plot svg { display: block; overflow: visible; }
+.plot:focus-visible, .tablewrap:focus-visible, .toggle button:focus-visible, a:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; border-radius: 6px; }
+.tip {
+  position: absolute; pointer-events: none; z-index: 2; display: none;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.14); padding: 8px 10px; font-size: 13px; min-width: 150px;
+}
+.tip .th { color: var(--ink2); margin-bottom: 4px; }
+.tip .row { display: flex; align-items: center; gap: 8px; line-height: 1.7; }
+.tip .row i { display: inline-block; width: 12px; border-top: 2px solid; }
+.tip .row b { font-variant-numeric: tabular-nums; color: var(--ink); min-width: 62px; }
+.tip .row span { color: var(--ink2); }
+.tview { margin-top: 8px; }
+.tview .tablewrap { border-radius: 8px; }
+.js .chartbox .tview { display: none; }
+.js .chartbox.show-table .tview { display: block; }
+.js .chartbox.show-table .plot { display: none; }
+html:not(.js) .plot, html:not(.js) .toggle { display: none; }
+
+ul.plain { margin: 0; padding-left: 20px; max-width: 70ch; }
+ul.plain li { margin: 0 0 10px; }
+dl.facts { display: grid; grid-template-columns: minmax(130px, 200px) 1fr; gap: 0; margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+dl.facts dt, dl.facts dd { margin: 0; padding: 11px 16px; border-bottom: 1px solid var(--grid); }
+dl.facts dt { color: var(--ink2); font-size: 14px; }
+dl.facts > :nth-last-child(-n+2) { border-bottom: 0; }
+@media (max-width: 560px) {
+  dl.facts { grid-template-columns: 1fr; }
+  dl.facts dt { border-bottom: 0; padding-bottom: 0; }
+  dl.facts > :nth-last-child(2) { border-bottom: 0; }
+  dl.facts dd { padding-top: 2px; }
+  header.top { padding-top: 36px; }
+}
+footer { margin-top: 64px; padding-top: 18px; border-top: 1px solid var(--grid); font-size: 13px; color: var(--ink2); }
+footer p { max-width: none; margin: 0 0 6px; }
+
+@media (forced-colors: active), print {
+  .s1 { stroke-dasharray: none; } .s2 { stroke-dasharray: 7 4; } .s3 { stroke-dasharray: 2 4; }
+  .legend i, .tip .row i { border-top-style: solid; }
+  .legend i.k2 { border-top-style: dashed; } .legend i.k3 { border-top-style: dotted; }
+}
+@media print {
+  body { background: #fff; }
+  .toggle { display: none; }
+  .js .chartbox .tview { display: block; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Agentforce HR Service Desk and Slack Frontline</p>
+  <h1>PACCAR HR Service: ROI and 5-year business value</h1>
+  <p class="lede">A five-year model for four US plants, about 22 full-time plant HR staff and roughly 6,000 hourly workers.</p>
+  <p class="byline">Prepared by Hal Bennick, Salesforce &middot; November 3, 2026</p>
+  <p class="draft"><b>Draft for discussion.</b> Every figure is a modeled estimate built on the assumptions listed below. The plant list and HR headcount have not been confirmed with PACCAR, and pricing is pending confirmation.</p>
+
+  <div class="tiles" role="list">
+    <div class="tile" role="listitem"><div class="v">+&#8288;$1.18M</div><div class="l">5-year NPV, total value (Expected case)</div></div>
+    <div class="tile" role="listitem"><div class="v">42%</div><div class="l">5-year ROI, total value</div></div>
+    <div class="tile" role="listitem"><div class="v">22 months</div><div class="l">Payback, total value</div></div>
+    <div class="tile" role="listitem"><div class="v">&minus;&#8288;$1.57M</div><div class="l">5-year NPV, hard savings only</div></div>
+  </div>
+  <p class="tilenote">NPV at an 8% discount rate. Hard savings are plant HR capacity (after realization) plus avoided HR errors and disputes. Total value adds hourly-worker time, supervisor time and turnover.</p>
+</header>
+
+<main>
+
+<section aria-labelledby="short">
+  <h2 id="short">The short version</h2>
+  <p>In the Expected case the 5-year NPV is +&#8288;$1.18M, ROI is 42%, and payback comes in at about 22 months. Worker time, supervisor time and a small turnover line supply about 63% of the steady-state value, so the result depends on them.</p>
+  <p>Plant HR capacity plus avoided incidents come to &minus;&#8288;$1.57M over five years and never pay back. Covering the platform cost with HR capacity alone takes 7.3 FTE freed at 100% cash conversion (33% of the 22 plant HR staff), or 10.4 FTE at 70% realization (47%).</p>
+  <p>A target of two fewer HR staff per plant is 8 FTE, or 36% of plant HR. That is worth $0.56M to $0.80M a year against a $726K annual platform cost. It roughly breaks even at best (hard-only NPV of &minus;&#8288;$0.93M at 70% realization and &minus;&#8288;$0.09M at 100%), so it cannot carry the case alone.</p>
+  <p>License size moves the number most. The base case licenses 300 HR Service Desk seats and 10,000 platform users, which is $510K a year. Scaled to 6,000 users and about 24 seats, it comes to about $228K a year, and the Expected total NPV rises to +&#8288;$2.31M. That is arithmetic on unit prices, so the figure needs pricing confirmation before anyone quotes it.</p>
+  <p>The Conservative case does not pay back (total NPV &minus;&#8288;$1.46M). The Aggressive case returns +&#8288;$3.64M with payback in about 8 months, although it is still negative on hard savings alone (&minus;&#8288;$0.58M).</p>
+</section>
+
+<section aria-labelledby="scope">
+  <h2 id="scope">What is modeled</h2>
+  <dl class="facts">
+    <dt>Plants</dt>
+    <dd>Four US plants: Kenworth Chillicothe (OH), Kenworth Renton (WA), Peterbilt Denton (TX) and PACCAR Engine Company Columbus (MS). The list comes from public research and is unconfirmed.</dd>
+    <dt>Plant HR staff</dt>
+    <dd>22 full-time staff (about 5.5 per plant) at $100K loaded cost each.</dd>
+    <dt>Workforce</dt>
+    <dd>About 6,000 hourly union workers and 240 supervisors. Access is phone only on the worker's own device, with Entra ID sign-in. Answers are deterministic and cite policy.</dd>
+    <dt>Out of scope</dt>
+    <dd>Canada and Mexico, where the workers are salaried.</dd>
+    <dt>Time frame</dt>
+    <dd>Five years after a Year 0 implementation. Adoption ramps 60%, 85% and then 100% from Year 3. Payback is measured from the Year 0 investment.</dd>
+  </dl>
+</section>
+
+<section aria-labelledby="results">
+  <h2 id="results">Results by scenario</h2>
+  <div class="tablewrap" role="region" aria-label="Results by scenario" tabindex="0">
+    <table>
+      <caption>Platform cost covers HR Service Desk licenses, Slack Frontline for 6,000 users ($3 to $5 per user per month) and one-time implementation.</caption>
+      <thead><tr><th scope="col">Metric</th><th scope="col">Conservative</th><th scope="col" class="exp">Expected</th><th scope="col">Aggressive</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Plant HR capacity freed (of 22 FTE)</th><td>3.6 FTE (16%)</td><td class="exp">5.4 FTE (24%)</td><td>7.0 FTE (32%)</td></tr>
+        <tr><th scope="row">Steady-state annual value, hard</th><td>$0.23M</td><td class="exp">$0.47M</td><td>$0.75M</td></tr>
+        <tr><th scope="row">Steady-state annual value, total</th><td>$0.69M</td><td class="exp">$1.25M</td><td>$1.96M</td></tr>
+        <tr><th scope="row">Annual platform cost</th><td>$0.87M</td><td class="exp">$0.73M</td><td>$0.73M</td></tr>
+        <tr><th scope="row">5-year platform and implementation cost</th><td>$4.75M</td><td class="exp">$3.93M</td><td>$3.93M</td></tr>
+        <tr><th scope="row">5-year gross value, hard</th><td>$1.01M</td><td class="exp">$2.08M</td><td>$3.33M</td></tr>
+        <tr><th scope="row">5-year gross value, total</th><td>$3.08M</td><td class="exp">$5.58M</td><td>$8.71M</td></tr>
+        <tr class="sum"><th scope="row">NPV at 8%, hard only</th><td>&minus;&#8288;$3.08M</td><td class="exp">&minus;&#8288;$1.57M</td><td>&minus;&#8288;$0.58M</td></tr>
+        <tr class="sum"><th scope="row">NPV at 8%, total</th><td>&minus;&#8288;$1.46M</td><td class="exp">+&#8288;$1.18M</td><td>+&#8288;$3.64M</td></tr>
+        <tr><th scope="row">5-year ROI, hard only</th><td>&minus;79%</td><td class="exp">&minus;47%</td><td>&minus;15%</td></tr>
+        <tr><th scope="row">5-year ROI, total</th><td>&minus;35%</td><td class="exp">42%</td><td>122%</td></tr>
+        <tr><th scope="row">Payback, hard only</th><td>Not within 5 years</td><td class="exp">Not within 5 years</td><td>Not within 5 years</td></tr>
+        <tr><th scope="row">Payback, total</th><td>Not within 5 years</td><td class="exp">22 months</td><td>8.0 months</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="curves">
+  <h2 id="curves">Cumulative net value over five years</h2>
+  <p>Each line starts at the Year 0 implementation cost and adds each year's value minus platform cost. Undiscounted, in dollars.</p>
+
+  <div class="chartbox" id="box-total">
+    <div class="chead">
+      <div><h3>Cumulative net value, total</h3><p>Includes worker time, supervisor time and turnover</p></div>
+      <div class="toggle" role="group" aria-label="Chart or table view"><button type="button" data-view="chart" aria-pressed="true">Chart</button><button type="button" data-view="table" aria-pressed="false">Table</button></div>
+    </div>
+    <ul class="legend" aria-label="Legend"><li><i class="k1"></i>Conservative</li><li><i class="k2"></i>Expected</li><li><i class="k3"></i>Aggressive</li></ul>
+    <div class="plot" id="plot-total" tabindex="0" role="group" aria-label="Line chart of cumulative net value, total. Use left and right arrow keys to read each year. A table view is also available."><div class="tip" aria-hidden="true"></div></div>
+    <div class="tview"><div class="tablewrap" role="region" aria-label="Cumulative net value, total" tabindex="0"><table><caption>Cumulative net value, total, cumulative, in thousands of dollars.</caption><thead><tr><th scope="col">Year</th><th scope="col">Conservative</th><th scope="col" class="exp">Expected</th><th scope="col">Aggressive</th></tr></thead><tbody><tr><th scope="row">Year 0</th><td>−$400K</td><td class="exp">−$300K</td><td>−$300K</td></tr><tr><th scope="row">Year 1</th><td>−$855K</td><td class="exp">−$273K</td><td>+&#8288;$149K</td></tr><tr><th scope="row">Year 2</th><td>−$1,138K</td><td class="exp">+&#8288;$67K</td><td>+&#8288;$1,087K</td></tr><tr><th scope="row">Year 3</th><td>−$1,316K</td><td class="exp">+&#8288;$596K</td><td>+&#8288;$2,319K</td></tr><tr><th scope="row">Year 4</th><td>−$1,495K</td><td class="exp">+&#8288;$1,124K</td><td>+&#8288;$3,551K</td></tr><tr><th scope="row">Year 5</th><td>−$1,674K</td><td class="exp">+&#8288;$1,653K</td><td>+&#8288;$4,783K</td></tr></tbody></table></div></div>
+  </div>
+
+  <div class="chartbox" id="box-hard">
+    <div class="chead">
+      <div><h3>Cumulative net value, hard savings only</h3><p>Plant HR capacity plus avoided incidents</p></div>
+      <div class="toggle" role="group" aria-label="Chart or table view"><button type="button" data-view="chart" aria-pressed="true">Chart</button><button type="button" data-view="table" aria-pressed="false">Table</button></div>
+    </div>
+    <ul class="legend" aria-label="Legend"><li><i class="k1"></i>Conservative</li><li><i class="k2"></i>Expected</li><li><i class="k3"></i>Aggressive</li></ul>
+    <div class="plot" id="plot-hard" tabindex="0" role="group" aria-label="Line chart of cumulative net value, hard savings only. Use left and right arrow keys to read each year. A table view is also available."><div class="tip" aria-hidden="true"></div></div>
+    <div class="tview"><div class="tablewrap" role="region" aria-label="Cumulative net value, hard savings only" tabindex="0"><table><caption>Cumulative net value, hard savings only, cumulative, in thousands of dollars.</caption><thead><tr><th scope="col">Year</th><th scope="col">Conservative</th><th scope="col" class="exp">Expected</th><th scope="col">Aggressive</th></tr></thead><tbody><tr><th scope="row">Year 0</th><td>−$400K</td><td class="exp">−$300K</td><td>−$300K</td></tr><tr><th scope="row">Year 1</th><td>−$1,134K</td><td class="exp">−$746K</td><td>−$577K</td></tr><tr><th scope="row">Year 2</th><td>−$1,811K</td><td class="exp">−$1,074K</td><td>−$667K</td></tr><tr><th scope="row">Year 3</th><td>−$2,454K</td><td class="exp">−$1,333K</td><td>−$644K</td></tr><tr><th scope="row">Year 4</th><td>−$3,098K</td><td class="exp">−$1,592K</td><td>−$622K</td></tr><tr><th scope="row">Year 5</th><td>−$3,741K</td><td class="exp">−$1,851K</td><td>−$600K</td></tr></tbody></table></div></div>
+  </div>
+  <p class="note" style="margin-top:12px">In the Expected case the total line turns positive during Year 2. The hard-savings line stays below zero in every scenario.</p>
+</section>
+
+<section aria-labelledby="levers">
+  <h2 id="levers">Where the value comes from</h2>
+  <div class="tablewrap" role="region" aria-label="Value levers" tabindex="0">
+    <table>
+      <caption>Expected case, steady state (Year 3 onward).</caption>
+      <thead><tr><th scope="col">Lever</th><th scope="col" class="l">Calculation</th><th scope="col">Per year</th><th scope="col">5 years</th><th scope="col" class="l">Type</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Plant HR capacity</th><td class="l">22 FTE &times; 50% of time on inquiry and transactional admin = 11 FTE addressable. 40% deflected plus 15% assist on the rest frees 5.4 FTE &times; $100K &times; 70% realization</td><td>$377K</td><td>$1.68M</td><td class="l">Hard</td></tr>
+        <tr><th scope="row">Avoided HR errors and disputes</th><td class="l">15 incidents a year &times; $6K handling cost</td><td>$90K</td><td>$0.40M</td><td class="l">Semi-hard</td></tr>
+        <tr><th scope="row">Hourly-worker time</th><td class="l">6,000 workers &times; 12 HR contacts a year &times; 55% moved to mobile self-service &times; 15 minutes saved &times; 50% on the clock &times; $45 an hour</td><td>$223K</td><td>$0.99M</td><td class="l">Soft</td></tr>
+        <tr><th scope="row">Supervisor time</th><td class="l">240 supervisors &times; 52 hours a year on HR questions &times; 40% removed &times; $65 an hour</td><td>$324K</td><td>$1.44M</td><td class="l">Soft</td></tr>
+        <tr><th scope="row">Turnover</th><td class="l">0.5 point lower attrition &times; 6,000 workers &times; $8K replacement cost</td><td>$240K</td><td>$1.07M</td><td class="l">Soft, kept small on purpose</td></tr>
+        <tr class="sum"><th scope="row">Total</th><td class="l"></td><td>$1.25M</td><td>$5.58M</td><td class="l"></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:12px">Hard savings count the first two levers. Total value counts all five.</p>
+</section>
+
+<section aria-labelledby="license">
+  <h2 id="license">License size and platform cost</h2>
+  <p>The same value assumptions run against different cost structures. Right-sizing the HR Service Desk license changes the result more than any value assumption does.</p>
+  <div class="tablewrap" role="region" aria-label="Cost-side scenarios" tabindex="0">
+    <table>
+      <caption>Expected case.</caption>
+      <thead><tr><th scope="col">Scenario</th><th scope="col">Annual cost</th><th scope="col">NPV, hard</th><th scope="col">NPV, total</th><th scope="col">Payback, total</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Base (300 seats, 10,000 users, Frontline at $3)</th><td>$726K</td><td>&minus;&#8288;$1.57M</td><td>+&#8288;$1.18M</td><td>22 months</td></tr>
+        <tr><th scope="row">Slack Frontline at a $500K a year placeholder</th><td>$1,010K</td><td>&minus;&#8288;$2.70M</td><td>+&#8288;$0.05M</td><td>49 months</td></tr>
+        <tr><th scope="row">HR license re-sized to 6,000 users and about 24 seats</th><td>$444K</td><td>&minus;&#8288;$0.44M</td><td>+&#8288;$2.31M</td><td>12 months</td></tr>
+        <tr><th scope="row">HR Service Desk only, no Slack Frontline</th><td>$510K</td><td>&minus;&#8288;$0.70M</td><td>+&#8288;$2.05M</td><td>13 months</td></tr>
+        <tr class="sum"><th scope="row">HR Service Desk only, re-sized</th><td>$228K</td><td>+&#8288;$0.42M</td><td>+&#8288;$3.17M</td><td>6.9 months</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:12px">The re-sized figures scale the opportunity's unit prices to the smaller footprint. They are arithmetic, not a quote.</p>
+</section>
+
+<section aria-labelledby="sens">
+  <h2 id="sens">Sensitivity</h2>
+  <p>One variable changes at a time; everything else stays at the Expected case. Each added plant is worth about +&#8288;$0.33M of total NPV.</p>
+  <div class="tablewrap" role="region" aria-label="Sensitivity" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Variable</th><th scope="col" class="l">Setting</th><th scope="col">NPV, hard</th><th scope="col">NPV, total</th><th scope="col">ROI, total</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Plants</th><td class="l">3</td><td>&minus;&#8288;$1.90M</td><td>+&#8288;$0.85M</td><td>31%</td></tr>
+        <tr class="sum"><th scope="row">Plants</th><td class="l">4 (base)</td><td>&minus;&#8288;$1.57M</td><td>+&#8288;$1.18M</td><td>42%</td></tr>
+        <tr><th scope="row">Plants</th><td class="l">5</td><td>&minus;&#8288;$1.24M</td><td>+&#8288;$1.51M</td><td>53%</td></tr>
+        <tr><th scope="row">Plants</th><td class="l">6</td><td>&minus;&#8288;$0.91M</td><td>+&#8288;$1.84M</td><td>63%</td></tr>
+        <tr><th scope="row">Plants</th><td class="l">8</td><td>&minus;&#8288;$0.25M</td><td>+&#8288;$2.50M</td><td>85%</td></tr>
+        <tr><th scope="row">Loaded HR cost</th><td class="l">$85K</td><td>&minus;&#8288;$1.76M</td><td>+&#8288;$0.99M</td><td>36%</td></tr>
+        <tr class="sum"><th scope="row">Loaded HR cost</th><td class="l">$100K (base)</td><td>&minus;&#8288;$1.57M</td><td>+&#8288;$1.18M</td><td>42%</td></tr>
+        <tr><th scope="row">Loaded HR cost</th><td class="l">$150K</td><td>&minus;&#8288;$0.91M</td><td>+&#8288;$1.84M</td><td>63%</td></tr>
+        <tr><th scope="row">L0/L1 deflection</th><td class="l">25%</td><td>&minus;&#8288;$1.91M</td><td>+&#8288;$0.84M</td><td>31%</td></tr>
+        <tr class="sum"><th scope="row">L0/L1 deflection</th><td class="l">40% (base)</td><td>&minus;&#8288;$1.57M</td><td>+&#8288;$1.18M</td><td>42%</td></tr>
+        <tr><th scope="row">L0/L1 deflection</th><td class="l">55%</td><td>&minus;&#8288;$1.22M</td><td>+&#8288;$1.53M</td><td>53%</td></tr>
+        <tr><th scope="row">Realization rate</th><td class="l">40%</td><td>&minus;&#8288;$2.13M</td><td>+&#8288;$0.62M</td><td>24%</td></tr>
+        <tr class="sum"><th scope="row">Realization rate</th><td class="l">70% (base)</td><td>&minus;&#8288;$1.57M</td><td>+&#8288;$1.18M</td><td>42%</td></tr>
+        <tr><th scope="row">Realization rate</th><td class="l">100%</td><td>&minus;&#8288;$1.00M</td><td>+&#8288;$1.75M</td><td>60%</td></tr>
+        <tr><th scope="row">Platform price</th><td class="l">70% of base</td><td>&minus;&#8288;$0.61M</td><td>+&#8288;$2.14M</td><td>103%</td></tr>
+        <tr class="sum"><th scope="row">Platform price</th><td class="l">Base</td><td>&minus;&#8288;$1.57M</td><td>+&#8288;$1.18M</td><td>42%</td></tr>
+        <tr><th scope="row">Platform price</th><td class="l">130% of base</td><td>&minus;&#8288;$2.53M</td><td>+&#8288;$0.22M</td><td>9%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="assume">
+  <h2 id="assume">Assumptions by scenario</h2>
+  <div class="tablewrap" role="region" aria-label="Scenario assumptions" tabindex="0">
+    <table>
+      <thead><tr><th scope="col">Assumption</th><th scope="col">Conservative</th><th scope="col" class="exp">Expected</th><th scope="col">Aggressive</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">L0/L1 deflection of plant HR inquiry work</th><td>25%</td><td class="exp">40%</td><td>55%</td></tr>
+        <tr><th scope="row">Assist rate on the remaining work</th><td>10%</td><td class="exp">15%</td><td>20%</td></tr>
+        <tr><th scope="row">Realization (freed capacity that becomes cash)</th><td>50%</td><td class="exp">70%</td><td>85%</td></tr>
+        <tr><th scope="row">HR contacts moved to mobile self-service</th><td>35%</td><td class="exp">55%</td><td>70%</td></tr>
+        <tr><th scope="row">Supervisor HR-question time removed</th><td>25%</td><td class="exp">40%</td><td>55%</td></tr>
+        <tr><th scope="row">Avoided HR incidents per year</th><td>8</td><td class="exp">15</td><td>25</td></tr>
+        <tr><th scope="row">Attrition reduction</th><td>0.25 pt</td><td class="exp">0.5 pt</td><td>1.0 pt</td></tr>
+        <tr><th scope="row">Slack Frontline, per user per month</th><td>$5</td><td class="exp">$3</td><td>$3</td></tr>
+        <tr><th scope="row">One-time implementation</th><td>$400K</td><td class="exp">$300K</td><td>$300K</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:12px">Fixed in every scenario: 50% of plant HR time is inquiry and transactional admin, 12 HR contacts per worker per year, 15 minutes saved per contact moved to self-service, 50% of that time on the clock, $45 an hour loaded for hourly workers, 240 supervisors at 52 hours a year and $65 an hour, $6K per avoided incident, and $8K per replaced hourly worker.</p>
+</section>
+
+<section aria-labelledby="open">
+  <h2 id="open">Open items</h2>
+  <ul class="plain">
+    <li><b>Salaried staff.</b> Whether plant HR also supports salaried plant staff. If it does, less of its time is open to hourly-worker self-service than the model assumes.</li>
+    <li><b>Plant list.</b> PACCAR needs to confirm the four plants. Each plant added or removed moves total NPV by about $0.33M.</li>
+    <li><b>Pricing.</b> License sizing and the Slack Frontline price are working figures until pricing is confirmed.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <p>Draft model dated November 3, 2026. All values are estimates in US dollars. NPV uses an 8% discount rate and the 60/85/100/100/100% adoption ramp.</p>
+  <p>This page is not indexed by search engines.</p>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var YEARS = ['Y0', 'Y1', 'Y2', 'Y3', 'Y4', 'Y5'];
+  var SER = [['Conservative', '--series-1', 's1', 'k1'], ['Expected', '--series-2', 's2', 'k2'], ['Aggressive', '--series-3', 's3', 'k3']];
+  var DATA = {"total": {"Conservative": [-400, -855, -1138, -1316, -1495, -1674], "Expected": [-300, -273, 67, 596, 1124, 1653], "Aggressive": [-300, 149, 1087, 2319, 3551, 4783]}, "hard": {"Conservative": [-400, -1134, -1811, -2454, -3098, -3741], "Expected": [-300, -746, -1074, -1333, -1592, -1851], "Aggressive": [-300, -577, -667, -644, -622, -600]}};
+  var MINUS = '−';
+
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function fmtK(v) { return (v < 0 ? MINUS : '+') + '$' + Math.abs(v).toLocaleString('en-US') + 'K'; }
+  function fmtAxis(v) {
+    if (v === 0) return '$0';
+    var m = Math.abs(v) / 1000;
+    return (v < 0 ? MINUS : '') + '$' + (Math.round(m * 10) / 10) + 'M';
+  }
+
+  function Chart(key) {
+    var host = document.getElementById('plot-' + key);
+    var box = document.getElementById('box-' + key);
+    var tip = host.querySelector('.tip');
+    var data = DATA[key];
+    var state = { idx: null, g: null };
+
+    var all = [];
+    SER.forEach(function (s) { all = all.concat(data[s[0]]); });
+    var lo = Math.min.apply(null, all.concat([0])), hi = Math.max.apply(null, all.concat([0]));
+    var step = [500, 1000, 2000, 5000].filter(function (s) {
+      return (Math.ceil(hi / s) * s - Math.floor(lo / s) * s) / s <= 7;
+    })[0] || 5000;
+    var loR = Math.floor(lo / step) * step, hiR = Math.ceil(hi / step) * step;
+
+    function hide() {
+      state.idx = null;
+      tip.style.display = 'none';
+      if (state.g) state.g.style.display = 'none';
+    }
+
+    function draw() {
+      var old = host.querySelector('svg');
+      if (old) old.remove();
+      var W = Math.max(300, host.clientWidth);
+      var wide = W >= 560;
+      var H = wide ? 340 : 300;
+      var m = { l: 56, r: wide ? 104 : 20, t: 14, b: 34 };
+      var pw = W - m.l - m.r, ph = H - m.t - m.b;
+      function X(i) { return m.l + i * pw / 5; }
+      function Y(v) { return m.t + (hiR - v) / (hiR - loR) * ph; }
+
+      var svg = el('svg', { width: W, height: H, viewBox: '0 0 ' + W + ' ' + H, 'aria-hidden': 'true' });
+      host.insertBefore(svg, tip);
+
+      for (var t = loR; t <= hiR; t += step) {
+        el('line', { x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), stroke: t === 0 ? 'var(--axis)' : 'var(--grid)', 'stroke-width': 1 }, svg);
+        var tx = el('text', { x: m.l - 10, y: Y(t) + 4, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--ink2)' }, svg);
+        tx.style.fontVariantNumeric = 'tabular-nums';
+        tx.textContent = fmtAxis(t);
+      }
+      YEARS.forEach(function (y, i) {
+        var xt = el('text', { x: X(i), y: H - 10, 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--ink2)' }, svg);
+        xt.textContent = wide ? 'Year ' + i : y;
+      });
+
+      SER.forEach(function (s) {
+        var pts = data[s[0]];
+        var d = pts.map(function (v, i) { return (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v).toFixed(1); }).join(' ');
+        el('path', { d: d, fill: 'none', stroke: 'var(' + s[1] + ')', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'class': s[2] }, svg);
+        var lastV = pts[5];
+        el('circle', { cx: X(5), cy: Y(lastV), r: 4.5, fill: 'var(' + s[1] + ')', stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
+        if (wide) {
+          var lb = el('text', { x: X(5) + 13, y: Y(lastV) + 4, 'font-size': 12.5, 'font-weight': 600, fill: 'var(--ink2)' }, svg);
+          lb.textContent = s[0];
+        }
+      });
+
+      var g = el('g', { style: 'display:none' }, svg);
+      var cross = el('line', { y1: m.t, y2: m.t + ph, stroke: 'var(--axis)', 'stroke-width': 1 }, g);
+      var dots = SER.map(function (s) {
+        return el('circle', { r: 4.5, fill: 'var(' + s[1] + ')', stroke: 'var(--surface)', 'stroke-width': 2 }, g);
+      });
+      state.g = g;
+
+      function show(i) {
+        i = Math.max(0, Math.min(5, i));
+        state.idx = i;
+        var x = X(i);
+        cross.setAttribute('x1', x); cross.setAttribute('x2', x);
+        SER.forEach(function (s, k) {
+          dots[k].setAttribute('cx', x);
+          dots[k].setAttribute('cy', Y(data[s[0]][i]));
+        });
+        g.style.display = '';
+        while (tip.firstChild) tip.removeChild(tip.firstChild);
+        var th = document.createElement('div');
+        th.className = 'th';
+        th.textContent = 'Year ' + i + (i === 0 ? ' (implementation)' : '');
+        tip.appendChild(th);
+        SER.slice().reverse().forEach(function (s) {
+          var row = document.createElement('div'); row.className = 'row';
+          var key = document.createElement('i'); key.style.borderColor = 'var(' + s[1] + ')';
+          var val = document.createElement('b'); val.textContent = fmtK(data[s[0]][i]);
+          var nm = document.createElement('span'); nm.textContent = s[0];
+          row.appendChild(key); row.appendChild(val); row.appendChild(nm);
+          tip.appendChild(row);
+        });
+        tip.style.display = 'block';
+        var tw = tip.offsetWidth;
+        var left = x + 14;
+        if (left + tw > W - 4) left = x - 14 - tw;
+        tip.style.left = Math.max(4, left) + 'px';
+        tip.style.top = (m.t + 6) + 'px';
+      }
+      state.show = show;
+
+      var hit = el('rect', { x: m.l - 24, y: m.t, width: pw + 48, height: ph, fill: 'transparent' }, svg);
+      function fromEvent(e) {
+        var r = svg.getBoundingClientRect();
+        return Math.round((e.clientX - r.left - m.l) / pw * 5);
+      }
+      hit.addEventListener('pointermove', function (e) { show(fromEvent(e)); });
+      hit.addEventListener('pointerdown', function (e) { show(fromEvent(e)); });
+      hit.addEventListener('pointerleave', hide);
+    }
+
+    host.addEventListener('keydown', function (e) {
+      var k = e.key;
+      if (k === 'ArrowRight') { state.show(state.idx === null ? 0 : state.idx + 1); e.preventDefault(); }
+      else if (k === 'ArrowLeft') { state.show(state.idx === null ? 5 : state.idx - 1); e.preventDefault(); }
+      else if (k === 'Home') { state.show(0); e.preventDefault(); }
+      else if (k === 'End') { state.show(5); e.preventDefault(); }
+      else if (k === 'Escape') { hide(); }
+    });
+    host.addEventListener('blur', hide);
+
+    box.querySelectorAll('.toggle button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var table = b.getAttribute('data-view') === 'table';
+        box.classList.toggle('show-table', table);
+        box.querySelectorAll('.toggle button').forEach(function (o) {
+          o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+        });
+        if (!table) draw();
+      });
+    });
+
+    draw();
+    var last = host.clientWidth;
+    if (window.ResizeObserver) {
+      new ResizeObserver(function () {
+        var w = host.clientWidth;
+        if (w && w !== last) { last = w; draw(); hide(); }
+      }).observe(host);
+    }
+  }
+
+  Chart('total');
+  Chart('hard');
+})();
+</script>
+</body>
+</html>
